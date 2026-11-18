@@ -1,7 +1,6 @@
 package hu.paydogs.tokitools.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,20 +18,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import hu.paydogs.tokitools.AppLanguage
 import hu.paydogs.tokitools.Language
 import hu.paydogs.tokitools.R
+import hu.paydogs.tokitools.proportion.RememberedProportion
+import hu.paydogs.tokitools.settings.UserSettings
 import hu.paydogs.tokitools.ui.theme.TokiToolsTheme
 import kotlinx.coroutines.launch
 
@@ -41,15 +42,26 @@ internal const val SCREEN_TITLE_TAG = "screenTitle"
 // Top app bars expose the experimental TopAppBarScrollBehavior type in their signature.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TokiToolsApp() {
+fun TokiToolsApp(language: Language,
+                 onLanguageSelect: (Language) -> Unit,
+                 settings: UserSettings,
+                 onSettingsChange: (UserSettings) -> Unit,
+                 proportionHistory: List<RememberedProportion>,
+                 onRememberProportion: (RememberedProportion) -> Unit,
+                 onClearProportionHistory: () -> Unit) {
     var tool by rememberSaveable { mutableStateOf(Tool.Proportion) }
     // Settings is a sub-page over the current tool, so leaving it lands back on that tool.
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    // Not observable state: a language change recreates the activity, which recomposes anyway.
-    val appLanguage = remember(context) { AppLanguage(context) }
+    // Keeps each tool's inputs while another tool or Settings is shown.
+    val toolStates = rememberSaveableStateHolder()
+    val focusManager = LocalFocusManager.current
+
+    // Opening the drawer (☰ or swipe) leaves any text field, which also hides the keyboard.
+    LaunchedEffect(drawerState.targetValue) {
+        if (drawerState.targetValue == DrawerValue.Open) focusManager.clearFocus()
+    }
 
     BackHandler(enabled = settingsOpen) { settingsOpen = false }
 
@@ -107,13 +119,23 @@ fun TokiToolsApp() {
             val contentModifier = Modifier.fillMaxSize().padding(innerPadding)
             if (settingsOpen) {
                 SettingsScreen(
-                    selected = appLanguage.current,
-                    onSelect = { language: Language -> appLanguage.set(language) },
+                    language = language,
+                    onLanguageSelect = onLanguageSelect,
+                    settings = settings,
+                    onSettingsChange = onSettingsChange,
                     modifier = contentModifier,
                 )
             } else {
-                // Tool content goes here once the tools are defined.
-                Box(modifier = contentModifier)
+                toolStates.SaveableStateProvider(tool.name) {
+                    when (tool) {
+                        Tool.Proportion -> ProportionScreen(decimals = settings.decimals,
+                                                            history = proportionHistory,
+                                                            onRemember = onRememberProportion,
+                                                            onClearHistory = onClearProportionHistory,
+                                                            modifier = contentModifier)
+                        Tool.Percentage -> PercentageScreen(decimals = settings.decimals, modifier = contentModifier)
+                    }
+                }
             }
         }
     }
@@ -123,6 +145,12 @@ fun TokiToolsApp() {
 @Composable
 private fun TokiToolsAppPreview() {
     TokiToolsTheme {
-        TokiToolsApp()
+        TokiToolsApp(language = Language.Hungarian,
+                     onLanguageSelect = {},
+                     settings = UserSettings(),
+                     onSettingsChange = {},
+                     proportionHistory = emptyList(),
+                     onRememberProportion = {},
+                     onClearProportionHistory = {})
     }
 }

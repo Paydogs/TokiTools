@@ -2,33 +2,41 @@ package hu.paydogs.tokitools.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.em
+import hu.paydogs.tokitools.R
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+// Comic Neue: an open-source (SIL OFL, license in assets/licenses) stand-in for Comic Sans,
+// which can't be bundled. Weights between the two files resolve to the nearest one.
+private val ComicNeue = FontFamily(
+    Font(R.font.comic_neue_regular, FontWeight.Normal),
+    Font(R.font.comic_neue_bold, FontWeight.Bold),
 )
+
+// Wider than Material's defaults (≈0.03em) on purpose; em keeps it proportional at every size.
+private val LetterSpacing = 0.06.em
+
+private fun TextStyle.comic(): TextStyle = copy(fontFamily = ComicNeue, letterSpacing = LetterSpacing)
+
+// Material's default sizes and weights, all in Comic Neue with wider letter spacing.
+val Typography = Typography().let { base: Typography ->
+    base.copy(
+        displayLarge = base.displayLarge.comic(),
+        displayMedium = base.displayMedium.comic(),
+        displaySmall = base.displaySmall.comic(),
+        headlineLarge = base.headlineLarge.comic(),
+        headlineMedium = base.headlineMedium.comic(),
+        headlineSmall = base.headlineSmall.comic(),
+        titleLarge = base.titleLarge.comic(),
+        titleMedium = base.titleMedium.comic(),
+        titleSmall = base.titleSmall.comic(),
+        bodyLarge = base.bodyLarge.comic(),
+        bodyMedium = base.bodyMedium.comic(),
+        bodySmall = base.bodySmall.comic(),
+        labelLarge = base.labelLarge.comic(),
+        labelMedium = base.labelMedium.comic(),
+        labelSmall = base.labelSmall.comic(),
+    )
+}

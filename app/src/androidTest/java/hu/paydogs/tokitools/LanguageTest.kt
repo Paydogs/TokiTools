@@ -9,7 +9,9 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import android.app.LocaleConfig
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import hu.paydogs.tokitools.ui.SCREEN_TITLE_TAG
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -70,5 +72,15 @@ class LanguageTest {
 
         awaitTitle("Beállítások")
         assertEquals("hu", language.current())
+    }
+
+    // The phone's per-app language list must offer exactly the languages Settings offers.
+    @Test
+    fun localeConfig_matchesSelectableLanguages() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val supported = LocaleConfig(context).supportedLocales!!
+        val tags = (0 until supported.size()).map { index: Int -> supported[index].toLanguageTag() }.toSet()
+
+        assertEquals(setOf("en", "hu"), tags)
     }
 }

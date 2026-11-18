@@ -7,4 +7,14 @@
     <string name="settings">Beállítások</string>
     <string name="back">Vissza</string>
     <string name="language">Nyelv</string>
+    <string name="clear">Törlés</string>
+    <string name="remember">Megjegyez</string>
+    <string name="clear_list">Lista törlése</string>
+    <string name="theme">Téma</string>
+    <string name="theme_system">Rendszer</string>
+    <string name="theme_light">Világos</string>
+    <string name="theme_dark">Sötét</string>
+    <string name="decimals">Tizedesjegyek</string>
+    <string name="decimals_less">Kevesebb tizedesjegy</string>
+    <string name="decimals_more">Több tizedesjegy</string>
 </resources>
