@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "hu.paydogs.tokitools"
-        minSdk = 31
+        minSdk = 33
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -34,6 +34,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+    // Lists the app's languages in the phone's per-app language settings.
+    androidResources {
+        generateLocaleConfig = true
     }
 }
 
@@ -41,6 +46,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)

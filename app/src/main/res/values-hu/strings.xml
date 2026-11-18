@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">TökiTools</string>
+    <string name="proportion">Arány</string>
+    <string name="percentage">Százalék</string>
+    <string name="open_menu">Menü megnyitása</string>
+    <string name="tools">Eszközök</string>
+    <string name="settings">Beállítások</string>
+    <string name="back">Vissza</string>
+    <string name="language">Nyelv</string>
 </resources>
